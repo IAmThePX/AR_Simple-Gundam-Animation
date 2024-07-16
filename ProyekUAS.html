@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+  <title>Proyek UAS VR AR</title>
+</head>
+<body>
+  <a-scene embedded arjs>
+    <a-marker type='pattern' url='pattern-marker.patt'>
+      <!-- Center Object (Moon) -->
+      <a-entity 
+        id="moon"
+        gltf-model="url(Moon.glb)" 
+        scale="1 1 1" 
+        position="0 1.5 0"
+        rotation="0 0 0"
+        animation__rotate="property: rotation; to: 0 360 0; dur: 4000; easing: linear; loop: true;">
+      </a-entity>
+
+      <!-- Animated Model 1 -->
+      <a-entity 
+        id="animated-model1"
+        gltf-model="url(ASW-G-08 Gundam Barbatos 4th form.glb)" 
+        scale="1 1 1" 
+        animation-mixer="clip: Mace; loop: repeat;"
+        orbit-animation="rotationSpeed: 1; distance: 2.2; height: 1">
+      </a-entity>
+
+      <!-- Animated Model 2 -->
+      <a-entity 
+        id="animated-model2"
+        gltf-model="url(MBF-02 Strike Rouge Ootori.glb)" 
+        scale="1.2 1.2 1.2" 
+        animation-mixer="clip: O-01-APPER; loop: repeat;"
+        orbit-animation="rotationSpeed: -1; distance: 4.4; height: 1">
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+    
+    <a-sound src="url(Insert Song - T.M. Revolution - Meteor.mp3)" autoplay="true" loop="true"></a-sound>
+  </a-scene>
+
+  <script>
+    AFRAME.registerComponent('orbit-animation', {
+      schema: {
+        rotationSpeed: {type: 'number', default: 0.5},
+        distance: {type: 'number', default: 2},
+        height: {type: 'number', default: 1.5} // Default height
+      },
+
+      tick: function (time, timeDelta) {
+        var el = this.el;
+        var rotationSpeed = this.data.rotationSpeed;
+        var distance = this.data.distance;
+        var height = this.data.height; // Get the height property
+
+        // Update rotation
+        el.object3D.rotation.y += rotationSpeed * (timeDelta / 1500);
+
+        // Calculate new position
+        var x = Math.cos(el.object3D.rotation.y) * distance;
+        var z = Math.sin(el.object3D.rotation.y) * distance;
+
+        // Set position with consistent height
+        el.object3D.position.set(x, height, z);
+      }
+    });
+
+    // Initialize the orbit animations with height
+    document.querySelector('#animated-model1').setAttribute('orbit-animation', { rotationSpeed: 1, distance: 2.2, height: 1 });
+    document.querySelector('#animated-model2').setAttribute('orbit-animation', { rotationSpeed: -1, distance: 4.4, height: 1 });
+  </script>
+</body>
+</html>
